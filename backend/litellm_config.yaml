@@ -1,0 +1,24 @@
+model_list:
+  # Tier "fast" — questions simples, gratuit, très faible latence
+  - model_name: fast-model
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+
+  # Tier "mid" — questions moyennement complexes, toujours open source
+  - model_name: mid-model
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
+  # Tier "smart" — questions complexes/à fort enjeu, qualité maximale
+  - model_name: smart-model
+    litellm_params:
+      model: claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
