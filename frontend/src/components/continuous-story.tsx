@@ -243,7 +243,7 @@ export function ContinuousStory() {
               aria-hidden="true"
             >
               <Image
-                src="/images/nathan-cutout.webp"
+                src="/images/nathan-paris-cutout.webp"
                 loading="eager"
                 alt=""
                 fill
@@ -292,7 +292,7 @@ export function ContinuousStory() {
               aria-hidden="true"
             >
               <Image
-                src="/images/nathan-cutout.webp"
+                src="/images/nathan-paris-cutout.webp"
                 loading="eager"
                 alt=""
                 fill

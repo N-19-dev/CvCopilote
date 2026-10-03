@@ -413,6 +413,7 @@ export function Portfolio() {
               ["#projets", "Les projets"],
               ["#parcours", "Le parcours"],
               ["#labo", "Le labo IA"],
+              ["/fr/pensees", "Mes pensées"],
             ].map(([href, label]) => (
               <a href={href} key={href} onClick={() => setMenuOpen(false)}>
                 {label}
