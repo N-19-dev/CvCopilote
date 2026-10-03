@@ -12,9 +12,15 @@ def test_chunking_splits_by_section():
     assert len([c for c in chunks if c.source == "experiences"]) >= 5
 
 
-def test_retrieve_thales_question_surfaces_thales_chunk():
-    results = rag.retrieve("Quelles technologies a-t-il utilisées chez Thales ?", top_k=3)
-    assert any("Thales" in c.text for c in results)
+def test_retrieve_internal_ippon_project_surfaces_knowledge_graph_chunk():
+    results = rag.retrieve(
+        "Quelles technologies a-t-il utilisées pour le projet interne Knowledge Graph chez Ippon ?",
+        top_k=3,
+    )
+    assert any(
+        "Ippon" in c.heading and "Knowledge Graph" in c.text and "Neo4j" in c.text
+        for c in results
+    )
 
 
 def test_retrieve_marketing_question_surfaces_relevant_chunk():

@@ -1,33 +1,44 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Nathan Sornet — CV Copilote",
-  description: "Dashboard interactif et agent conversationnel RAG sur le parcours de Nathan Sornet, Data/IA Engineer.",
+  title: "Nathan Sornet — Mon parcours, mes projets",
+  description:
+    "Le portfolio de Nathan Sornet, ingénieur Data & IA. De l’entrepreneuriat à l’ingénierie : mon parcours, mes projets et les choses que j’apprends en les construisant.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="fr"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
+    <html lang="fr">
+      <body>
+        <Script id="reload-at-top" strategy="beforeInteractive">{`
+          (() => {
+            const navigation = performance.getEntriesByType("navigation")[0];
+            if (!navigation || navigation.type !== "reload") return;
+
+            const previousRestoration = history.scrollRestoration;
+            history.scrollRestoration = "manual";
+            if (location.hash) {
+              history.replaceState(history.state, "", location.pathname + location.search);
+            }
+            const reset = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            reset();
+            const finish = () => {
+              reset();
+              requestAnimationFrame(() => {
+                reset();
+                history.scrollRestoration = previousRestoration;
+              });
+            };
+            if (document.readyState === "complete") finish();
+            else window.addEventListener("pageshow", finish, { once: true });
+          })();
+        `}</Script>
+        {children}
+      </body>
     </html>
   );
 }

@@ -21,7 +21,22 @@ export const skillDomains = [
   },
   {
     title: "IA & Python",
-    skills: ["LangChain / LangGraph", "Machine Learning", "Computer Vision", "Claude API"],
+    skills: [
+      "LangChain / LangGraph",
+      "Machine Learning",
+      "Computer Vision",
+      "Claude API",
+      "Neo4j / GraphRAG",
+    ],
+  },
+  {
+    title: "Applications & agents",
+    skills: [
+      "TypeScript / Next.js",
+      "SwiftUI",
+      "Supabase / PostgreSQL",
+      "Orchestration d’agents",
+    ],
   },
   {
     title: "Git & Outils",
@@ -29,14 +44,20 @@ export const skillDomains = [
   },
 ];
 
+// `logos` : chemins dans /public, ex. "/logos/ippon.png". Optionnel — absent
+// ou fichier manquant, le composant <Logo> ne rend simplement rien (voir
+// components/logo.tsx), donc ces champs peuvent être renseignés avant que les
+// fichiers n'existent réellement. Plusieurs logos pour une mission en régie
+// (ex. Ippon pour le compte de la FFR).
 export const experiences = [
   {
-    role: "Data & IA Ingénieur — POC",
-    company: "Thales",
+    role: "Data & IA Ingénieur — Projet interne",
+    company: "Ippon Technologies",
     period: "Mai 2026 – Juin 2026",
     description:
       "Pipeline Knowledge Graph 15 phases (ingestion S3, extraction NLP, Neo4j), enrichissement LLM (Mistral), interface GraphRAG hybride vecteur + Text-to-Cypher.",
     tech: ["Python", "Neo4j", "Mistral"],
+    logos: ["/logos/ippon.png"],
   },
   {
     role: "Data Ingénieur — CDI",
@@ -45,6 +66,7 @@ export const experiences = [
     description:
       "Référent technique client, gestion des accès Snowflake, migration Azure Functions → Durable Functions, template d'ingestion industrialisé.",
     tech: ["Snowflake", "dbt", "Azure Functions", "Durable Functions"],
+    logos: ["/logos/ippon.png", "/logos/ffr.png"],
   },
   {
     role: "Stage Data Ingénieur",
@@ -53,6 +75,7 @@ export const experiences = [
     description:
       "Observabilité Bronze/Silver/Gold, dashboard Power BI, alerting Teams temps réel, migration de scripts Data Science vers dbt SQL.",
     tech: ["Python", "SQL", "Azure", "Snowflake", "dbt"],
+    logos: ["/logos/ippon.png", "/logos/ffr.png"],
   },
   {
     role: "Stage Data Ingénieur",
@@ -61,6 +84,7 @@ export const experiences = [
     description:
       "Extraction et structuration de données multi-sources, workflows automatiques, tableaux de bord analytiques.",
     tech: ["MySQL", "Python", "Pandas"],
+    logos: ["/logos/report-linker.jpeg"],
   },
   {
     role: "Création d'entreprise",
@@ -69,20 +93,41 @@ export const experiences = [
     description:
       "Création et pilotage d'une marketplace : campagnes marketing (SEO, réseaux sociaux), analyse de performance — la genèse de sa double compétence technique/produit.",
     tech: ["SEO", "Analytics"],
+    logos: ["/logos/firstcop.jpeg"],
   },
 ];
 
 export const education = {
   degrees: [
-    { school: "ESME Paris", degree: "Diplôme d'ingénieur en BigData" },
-    { school: "ISG (PGE) — Master 2", degree: "Majeure BigData et Marketing Digital" },
+    {
+      school: "ESME Paris",
+      degree: "Diplôme d'ingénieur en BigData",
+      logo: "/logos/esme.png",
+    },
+    {
+      school: "ISG (PGE) — Master 2",
+      degree: "Majeure BigData et Marketing Digital",
+      logo: "/logos/isg.png",
+    },
   ],
   certifications: [
-    "Databricks Fundamentals Lakehouse",
-    "Astronomer — Apache Airflow 3 Fundamentals",
-    "Astronomer — DAG Authoring for Apache Airflow 3",
-    "Building with the Claude API",
-    "Claude Certified Architect Foundation",
+    {
+      name: "Databricks Fundamentals Lakehouse",
+      logo: "/logos/databricks.jpeg",
+    },
+    {
+      name: "Astronomer — Apache Airflow 3 Fundamentals",
+      logo: "/logos/astronomer.jpeg",
+    },
+    {
+      name: "Astronomer — DAG Authoring for Apache Airflow 3",
+      logo: "/logos/astronomer.jpeg",
+    },
+    { name: "Building with the Claude API", logo: "/logos/claude.png" },
+    {
+      name: "Claude Certified Architect Foundation",
+      logo: "/logos/claude.png",
+    },
   ],
 };
 
@@ -98,7 +143,7 @@ export const projects = [
     title: "CV Copilote — ce site",
     period: "En cours",
     description:
-      "Ce dashboard + agent conversationnel RAG, avec un routeur intelligent multi-fournisseurs (LiteLLM) qui classe la complexité de chaque question et choisit le modèle le plus économique adapté.",
+      "Ce portfolio et son agent conversationnel RAG, avec un routeur intelligent multi-fournisseurs (LiteLLM) qui classe la complexité de chaque question et choisit le modèle le plus économique adapté.",
     tech: ["FastAPI", "LiteLLM", "Redis", "Next.js", "shadcn/ui"],
   },
 ];

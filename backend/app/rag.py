@@ -2,6 +2,7 @@ import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+from typing import Protocol
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -28,6 +29,7 @@ FRENCH_STOPWORDS = {
 # seuls confondent parfois des entités précises (ex: un nom d'entreprise) avec
 # des chunks thématiquement proches ; un boost mots-clés corrige ce biais.
 KEYWORD_SCORE_WEIGHT = 0.35
+FALLBACK_EMBEDDING_DIM = 512
 
 
 @dataclass
@@ -35,6 +37,35 @@ class Chunk:
     source: str
     heading: str
     text: str
+
+
+class EmbeddingModel(Protocol):
+    def encode(self, texts: list[str], normalize_embeddings: bool = True) -> np.ndarray: ...
+
+
+class FallbackSentenceTransformer:
+    """Fallback déterministe hors ligne.
+
+    On garde le scoring hybride existant, mais on remplace les embeddings
+    distants par un hash bag-of-words local pour éviter qu'un simple manque
+    réseau casse les tests et le dev local.
+    """
+
+    def encode(self, texts: list[str], normalize_embeddings: bool = True) -> np.ndarray:
+        matrix = np.vstack([self._encode_one(text) for text in texts])
+        if normalize_embeddings:
+            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1.0
+            matrix = matrix / norms
+        return matrix
+
+    def _encode_one(self, text: str) -> np.ndarray:
+        vector = np.zeros(FALLBACK_EMBEDDING_DIM, dtype=np.float32)
+        for token in re.findall(r"\w+", text.lower()):
+            if len(token) <= 2 or token in FRENCH_STOPWORDS:
+                continue
+            vector[hash(token) % FALLBACK_EMBEDDING_DIM] += 1.0
+        return vector
 
 
 def _split_into_chunks(markdown_text: str, source: str) -> list[Chunk]:
@@ -80,8 +111,11 @@ def _keyword_score(query: str, text: str) -> float:
 
 
 @lru_cache(maxsize=1)
-def _get_model() -> SentenceTransformer:
-    return SentenceTransformer(EMBEDDING_MODEL_NAME)
+def _get_model() -> EmbeddingModel:
+    try:
+        return SentenceTransformer(EMBEDDING_MODEL_NAME)
+    except Exception:
+        return FallbackSentenceTransformer()
 
 
 @lru_cache(maxsize=1)
@@ -116,12 +150,19 @@ def load_persona() -> str:
     return (KNOWLEDGE_DIR / PERSONA_FILE).read_text(encoding="utf-8")
 
 
-def build_system_prompt(query: str, top_k: int = 3) -> str:
+def render_prompt(chunks: list[Chunk]) -> str:
     persona = load_persona()
-    chunks = retrieve(query, top_k=top_k)
     context = "\n\n---\n\n".join(c.text for c in chunks)
     return (
         f"{persona}\n\n"
         "# Contexte factuel sur Nathan (base de connaissances — ne rien affirmer en dehors de ce cadre)\n\n"
         f"{context}"
     )
+
+
+def build_system_prompt(query: str, top_k: int = 3) -> str:
+    """Raccourci retrieve + render_prompt — utilisé quand on n'a pas besoin des
+    chunks bruts séparément (voir chat.stream_answer pour le cas contraire,
+    qui a besoin des chunks pour les exposer comme "sources" côté client).
+    """
+    return render_prompt(retrieve(query, top_k=top_k))

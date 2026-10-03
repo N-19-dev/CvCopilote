@@ -26,6 +26,7 @@ def test_chat_endpoint(monkeypatch):
         completion_tokens=1,
         cached=False,
         savings_vs_smart_pct=None,
+        sources=[],
     )
     monkeypatch.setattr(main, "answer_question", lambda question: fake_response)
 

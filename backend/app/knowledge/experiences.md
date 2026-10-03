@@ -1,8 +1,8 @@
 # Expérience professionnelle
 
-## Data & IA Ingénieur — POC chez Thales (Mai 2026 – Juin 2026)
+## Data & IA Ingénieur — Projet interne chez Ippon Technologies (Mai 2026 – Juin 2026)
 
-Nathan a mené un POC de pipeline Knowledge Graph en 15 phases : ingestion S3 incrémentale, extraction NLP multi-sources (GLiNER, spaCy, tree-sitter/sqlglot), puis chargement dans Neo4j. Il a conçu la reconstruction automatique de la lignée de données (à partir de dbt, ADF, SQL) sous forme de graphe typé avec des relations comme FEEDS, EXECUTES, REPRESENTS. Il a enrichi ce graphe via un LLM (Mistral) : extraction de contexte métier, de concepts et de règles, classification thématique, et liaison sémantique entre fichiers et data contracts. Il a aussi construit une interface GraphRAG permettant d'interroger le graphe en langage naturel, combinant recherche vectorielle hybride et génération de requêtes Text-to-Cypher. Il a géré les transformations dbt de la donnée brute jusqu'à la donnée gold (agrégations, jointures, dédoublonnage, renommages).
+Dans le cadre d’un projet interne chez Ippon Technologies, sans client final associé, Nathan a mené un POC de pipeline Knowledge Graph en 15 phases : ingestion S3 incrémentale, extraction NLP multi-sources (GLiNER, spaCy, tree-sitter/sqlglot), puis chargement dans Neo4j. Il a conçu la reconstruction automatique de la lignée de données (à partir de dbt, ADF, SQL) sous forme de graphe typé avec des relations comme FEEDS, EXECUTES, REPRESENTS. Il a enrichi ce graphe via un LLM (Mistral) : extraction de contexte métier, de concepts et de règles, classification thématique, et liaison sémantique entre fichiers et data contracts. Il a aussi construit une interface GraphRAG permettant d'interroger le graphe en langage naturel, combinant recherche vectorielle hybride et génération de requêtes Text-to-Cypher. Il a géré les transformations dbt de la donnée brute jusqu'à la donnée gold (agrégations, jointures, dédoublonnage, renommages).
 
 Technologies : Python, Neo4j, Mistral.
 
