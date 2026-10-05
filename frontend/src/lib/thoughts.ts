@@ -39,7 +39,7 @@ export const brag = {
     title: "J’ai testé Brag : une commande, puis trois vidéos",
     excerpt: "Un /brag sans brief, puis deux demandes toutes simples. Voilà les trois vidéos obtenues à partir de mon projet dans Claude Code.",
     paragraphs: [
-      "Quand j’ai publié cette note, Brag était encore dans ma liste des choses à essayer. Depuis, je l’ai installé dans Claude Code et je l’ai testé sur mon projet. Cette fois, j’ai des vidéos à montrer.",
+      "Brag est un plugin qui transforme un projet en courte vidéo de présentation. Je l’ai installé dans Claude Code pour voir ce qu’il pouvait faire à partir de mon propre projet. Une commande, puis deux demandes très simples : j’ai obtenu trois vidéos, et le résultat m’a vraiment surpris.",
       "Ce qui m’intéressait, c’est qu’il travaille depuis le projet ouvert dans Claude Code. Il peut s’appuyer sur les fichiers et le contexte du dépôt pour comprendre ce que je construis. Je n’ai pas eu à lui réexpliquer tout le projet dans un brief vidéo.",
     ],
     installationTitle: "L’installation dans Claude Code",
@@ -82,7 +82,7 @@ export const brag = {
     title: "I tried Brag: one command, then three videos",
     excerpt: "One /brag without a brief, then two simple requests. Here are the three videos generated from my project in Claude Code.",
     paragraphs: [
-      "When I first published this note, Brag was still on my list of things to try. Since then, I’ve installed it in Claude Code and tested it on my project. This time, I have videos to show.",
+      "Brag is a plugin that turns a project into a short introduction video. I installed it in Claude Code to see what it could do with my own project. One command, then two very simple requests: I got three videos, and the result really surprised me.",
       "What interested me was that it works from the project open in Claude Code. It can use the repository’s files and context to understand what I’m building. I didn’t have to explain the entire project again in a video brief.",
     ],
     installationTitle: "Installing it in Claude Code",
