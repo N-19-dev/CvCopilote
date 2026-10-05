@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { brag, journal, thoughtPath, type Locale } from "@/lib/thoughts";
+import { brag, bragInstall, journal, thoughtPath, type Locale } from "@/lib/thoughts";
 import { profile } from "@/lib/profile";
 
 export function ThoughtsPage({
@@ -72,11 +72,37 @@ export function ThoughtsPage({
               <time dateTime="2026-10-03">
                 {locale === "fr" ? "3 octobre 2026" : "October 3, 2026"}
               </time>
+              <br />
+              <time dateTime="2026-10-05">
+                {locale === "fr" ? "Mis à jour le 5 octobre 2026" : "Updated October 5, 2026"}
+              </time>
             </p>
             <div className="thought-prose">
               {post.paragraphs.map((p) => (
                 <p key={p}>{p}</p>
               ))}
+              <h2>{post.installationTitle}</h2>
+              <p>{post.installation}</p>
+              <pre className="thought-command"><code>{bragInstall}</code></pre>
+              <p className="thought-prompt-note">{post.promptNote}</p>
+              {post.trials.map((trial) => (
+                <section className="thought-trial" key={trial.file}>
+                  <h2>{trial.title}</h2>
+                  <pre className="thought-command"><code>{trial.prompt}</code></pre>
+                  <p>{trial.description}</p>
+                  <figure>
+                    <video controls playsInline preload="metadata" width="1080" height="1920" aria-label={trial.caption}>
+                      <source src={`/videos/brag/${trial.file}`} type="video/mp4" />
+                      <a href={`/videos/brag/${trial.file}`}>{post.download}</a>
+                    </video>
+                    <figcaption>{trial.caption} <a href={`/videos/brag/${trial.file}`}>{post.download} ↗</a></figcaption>
+                  </figure>
+                </section>
+              ))}
+              <h2>{post.conclusionTitle}</h2>
+              <p>{post.conclusion}</p>
+              <h2>{post.costTitle}</h2>
+              <p>{post.cost}</p>
             </div>
             <a
               className="thought-source"
@@ -121,7 +147,7 @@ export function ThoughtsPage({
                 <div className="thought-meta">
                   <span>{copy.category}</span>
                   <span>{copy.status}</span>
-                  <time dateTime="2026-10-03">03.10.2026</time>
+                  <time dateTime="2026-10-05">{locale === "fr" ? "Actualisé le 05.10.2026" : "Updated 05.10.2026"}</time>
                 </div>
                 <Link
                   className="thought-entry"

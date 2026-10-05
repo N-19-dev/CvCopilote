@@ -4013,6 +4013,45 @@ html[data-film-tone="light"] .site-header {
 .thought-prose p {
   margin: 0 0 26px;
 }
+.thought-prose h2 {
+  font: 400 clamp(26px, 4vw, 34px)/1.25 Georgia, serif;
+  letter-spacing: -0.025em;
+  margin: 42px 0 20px;
+}
+.thought-command {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #eeece3;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0 0 26px;
+}
+.thought-prompt-note,
+.thought-trial figcaption {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.thought-trial {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 36px;
+}
+.thought-trial figure { margin: 0; }
+.thought-trial video {
+  display: block;
+  width: min(100%, 340px);
+  height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  background: #171717;
+  border-radius: 12px;
+  margin: 0 auto 14px;
+}
+.thought-trial figcaption { text-align: center; }
+.thought-trial figcaption a { text-decoration: underline; }
 .thought-source {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
