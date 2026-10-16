@@ -127,7 +127,7 @@ export const routing = {
     "title": "Et si, demain, on ne choisissait plus son modèle d’IA ?",
     "excerpt": "Choisir la bonne IA pour le bon besoin : pourquoi le routage pourrait devenir une opportunité à part entière.",
     "paragraphs": [
-      "En écoutant Silicon Carnet, un podcast que j’adore, une idée m’est restée : une partie de la valeur pourrait se déplacer des grands modèles vers l’infrastructure qui les fait fonctionner et les outils qui choisissent lequel utiliser.",
+      "En écoutant Silicon Carne, un podcast que j’adore, une idée m’est restée : une partie de la valeur pourrait se déplacer des grands modèles vers l’infrastructure qui les fait fonctionner et les outils qui choisissent lequel utiliser.",
       "Je ne parierais pas sur la disparition de Claude ou ChatGPT dans deux ans. Mais sur le fait que leur nom compte moins pour l’utilisateur ? Ça, je peux l’imaginer.",
       "C’est là que le routage devient intéressant : envoyer chaque demande au modèle le plus adapté, selon la difficulté, le coût, la vitesse attendue et la confidentialité des données.",
       "Une reformulation simple pourrait passer par un petit modèle rapide. Une analyse complexe, par un modèle plus puissant. Un document confidentiel, par un modèle hébergé dans un environnement maîtrisé.",
@@ -145,7 +145,7 @@ export const routing = {
     "title": "What if we stopped choosing our AI model?",
     "excerpt": "The right AI for the right need: why routing could become a business opportunity in its own right.",
     "paragraphs": [
-      "While listening to Silicon Carnet, a podcast I love, one idea stuck with me: some of the value could shift from large models to the infrastructure that runs them and the tools that choose which one to use.",
+      "While listening to Silicon Carne, a podcast I love, one idea stuck with me: some of the value could shift from large models to the infrastructure that runs them and the tools that choose which one to use.",
       "I wouldn’t bet on Claude or ChatGPT disappearing within two years. But on their names mattering less to users? That, I can imagine.",
       "That’s where routing gets interesting: sending each request to the most suitable model, based on difficulty, cost, expected speed and data privacy.",
       "A simple rewrite could go to a small, fast model. A complex analysis to a more powerful one. A confidential document to a model hosted in a controlled environment.",
