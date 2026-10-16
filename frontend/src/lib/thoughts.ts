@@ -121,6 +121,51 @@ export const brag = {
     contact: "Let’s talk on LinkedIn",
   },
 } as const;
-export function thoughtPath(locale: Locale, article = false) {
-  return `/${locale}/${journal[locale].section}${article ? `/${brag[locale].slug}` : ""}`;
+export const routing = {
+  "fr": {
+    "slug": "ia-routage-modeles",
+    "title": "Et si, demain, on ne choisissait plus son modèle d’IA ?",
+    "excerpt": "Choisir la bonne IA pour le bon besoin : pourquoi le routage pourrait devenir une opportunité à part entière.",
+    "paragraphs": [
+      "En écoutant Silicon Carnet, un podcast que j’adore, une idée m’est restée : une partie de la valeur pourrait se déplacer des grands modèles vers l’infrastructure qui les fait fonctionner et les outils qui choisissent lequel utiliser.",
+      "Je ne parierais pas sur la disparition de Claude ou ChatGPT dans deux ans. Mais sur le fait que leur nom compte moins pour l’utilisateur ? Ça, je peux l’imaginer.",
+      "C’est là que le routage devient intéressant : envoyer chaque demande au modèle le plus adapté, selon la difficulté, le coût, la vitesse attendue et la confidentialité des données.",
+      "Une reformulation simple pourrait passer par un petit modèle rapide. Une analyse complexe, par un modèle plus puissant. Un document confidentiel, par un modèle hébergé dans un environnement maîtrisé.",
+      "L’utilisateur, lui, veut surtout que ça fonctionne. Il n’a pas envie de comparer quinze modèles avant de travailler.",
+      "Mon intuition : il y a de belles entreprises à construire autour de ce besoin. Surtout en se spécialisant sur un métier, avec ses exigences et ses critères de qualité.",
+      "Un bon routeur devrait apprendre des résultats réels, mesurer ce qui fonctionne et savoir passer à un modèle plus capable quand c’est nécessaire. Avec des gains démontrables sur le prix, le délai et la fiabilité.",
+      "Le défi, c’est que les grandes plateformes peuvent aussi intégrer cette fonction. L’avantage durable pourrait donc venir de la connaissance du métier et de la capacité à évaluer les réponses.",
+      "La prochaine opportunité dans l’IA pourrait être de savoir quelle intelligence mobiliser, pour quel besoin, au bon moment."
+    ],
+    "category": "Réflexion",
+    "status": "Une intuition à explorer"
+  },
+  "en": {
+    "slug": "ai-model-routing",
+    "title": "What if we stopped choosing our AI model?",
+    "excerpt": "The right AI for the right need: why routing could become a business opportunity in its own right.",
+    "paragraphs": [
+      "While listening to Silicon Carnet, a podcast I love, one idea stuck with me: some of the value could shift from large models to the infrastructure that runs them and the tools that choose which one to use.",
+      "I wouldn’t bet on Claude or ChatGPT disappearing within two years. But on their names mattering less to users? That, I can imagine.",
+      "That’s where routing gets interesting: sending each request to the most suitable model, based on difficulty, cost, expected speed and data privacy.",
+      "A simple rewrite could go to a small, fast model. A complex analysis to a more powerful one. A confidential document to a model hosted in a controlled environment.",
+      "Users mostly want things to work. They don’t want to compare fifteen models before getting on with their work.",
+      "My hunch: there are great businesses to build around this need. Especially by focusing on a particular profession, with its own requirements and quality standards.",
+      "A good router should learn from real outcomes, measure what works and know when to move to a more capable model. With demonstrable improvements in cost, turnaround time and reliability.",
+      "The challenge is that large platforms can add this feature too. A lasting advantage could therefore come from understanding the profession and being able to evaluate the responses.",
+      "The next opportunity in AI could be knowing which intelligence to use, for which need, at the right moment."
+    ],
+    "category": "Reflection",
+    "status": "An idea to explore"
+  }
+} as const;
+export const thoughts = { routing, brag } as const;
+export type ThoughtId = keyof typeof thoughts;
+export type ThoughtSelection = boolean | ThoughtId;
+export function thoughtId(locale: Locale, slug?: string): ThoughtId | undefined {
+  return (Object.keys(thoughts) as ThoughtId[]).find((id) => thoughts[id][locale].slug === slug);
+}
+export function thoughtPath(locale: Locale, article: ThoughtSelection = false) {
+  const id = article === true ? "brag" : article;
+  return `/${locale}/${journal[locale].section}${id ? `/${thoughts[id][locale].slug}` : ""}`;
 }

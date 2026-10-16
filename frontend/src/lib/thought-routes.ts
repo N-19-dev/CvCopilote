@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { brag, journal, thoughtPath, type Locale } from "./thoughts";
+import { thoughts, thoughtId, journal, thoughtPath, type Locale, type ThoughtSelection } from "./thoughts";
 export type ThoughtParams = { locale: string; section: string; slug?: string };
 export function validateThought(params: ThoughtParams): Locale {
   if (params.locale !== "fr" && params.locale !== "en") notFound();
   const locale = params.locale;
   if (
     params.section !== journal[locale].section ||
-    (params.slug !== undefined && params.slug !== brag[locale].slug)
+    (params.slug !== undefined && !thoughtId(locale, params.slug))
   )
     notFound();
   return locale;
 }
-export function thoughtMetadata(locale: Locale, article = false): Metadata {
-  const title = `${article ? brag[locale].title : journal[locale].title} — Nathan Sornet`;
-  const description = article ? brag[locale].excerpt : journal[locale].intro;
+export function thoughtMetadata(locale: Locale, article: ThoughtSelection = false): Metadata {
+  const post = thoughts[article === true || article === false ? "brag" : article][locale];
+  const title = `${article ? post.title : journal[locale].title} — Nathan Sornet`;
+  const description = article ? post.excerpt : journal[locale].intro;
   const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
   return {
     metadataBase: new URL(

@@ -13,7 +13,7 @@ Développé sur `codex/pensees-bilingues`. Publication sur `main` autorisée par
 
 Les textes français et anglais sont dans `frontend/src/lib/thoughts.ts`. La version anglaise est préparée à l’avance, pas générée à chaque lecture. Brag est désormais un retour d’essai, actualisé le 5 octobre 2026 à partir du récit de Nathan. Les versions française et anglaise incluent les commandes d’installation vérifiées dans le dépôt officiel et trois vidéos locales dans `frontend/public/videos/brag/`. Les deux demandes de style sont rapportées de mémoire ; aucun coût ni résultat mesuré n’est inventé. La source et l’aide à la rédaction par IA restent explicites. Le billet fait partie de la première publication du carnet.
 
-Cette première version contient une seule note. Pour élargir le carnet, convertir les données en collection d’articles avec un identifiant commun aux traductions, des slugs par langue et un statut brouillon/publié. Aucun formulaire d’administration ni collecte automatique de conversations n’est actif.
+Le carnet contient désormais deux notes publiées : Brag et une réflexion sur le routage des modèles IA, ajoutée le 16 octobre 2026. Les articles ont un identifiant commun aux traductions et des slugs par langue. La réflexion conserve le texte français validé par Nathan et sa traduction anglaise, avec des liens vers OpenRouter et RouteLLM. Les brouillons restent dans les documents privés du projet. Aucun formulaire d’administration ni collecte automatique de conversations n’est actif.
 
 Flux éditorial envisagé : lien/note vocale choisi par Nathan → brouillon privé → vérification des affirmations → version anglaise → validation → publication. Ne pas inventer d’essais ni présenter une découverte comme une recommandation éprouvée.
 

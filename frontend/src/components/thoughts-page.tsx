@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { brag, bragInstall, journal, thoughtPath, type Locale } from "@/lib/thoughts";
+import { brag, routing, bragInstall, journal, thoughtPath, type Locale, type ThoughtSelection } from "@/lib/thoughts";
 import { profile } from "@/lib/profile";
 
 export function ThoughtsPage({
@@ -8,10 +8,12 @@ export function ThoughtsPage({
   article = false,
 }: {
   locale: Locale;
-  article?: boolean;
+  article?: ThoughtSelection;
 }) {
   const copy = journal[locale];
   const post = brag[locale];
+  const reflection = routing[locale];
+  const isRouting = article === "routing";
   return (
     <div className="thoughts-shell">
       <a className="skip-link" href="#thought-content">
@@ -62,13 +64,14 @@ export function ThoughtsPage({
               {copy.back}
             </Link>
             <div className="thought-meta">
-              <span>{copy.category}</span>
-              <span>{copy.status}</span>
+              <span>{isRouting ? reflection.category : copy.category}</span>
+              <span>{isRouting ? reflection.status : copy.status}</span>
               <span>{copy.minutes}</span>
             </div>
-            <h1>{post.title}</h1>
+            <h1>{isRouting ? reflection.title : post.title}</h1>
             <p className="thought-byline">
               Nathan Sornet <span>·</span>{" "}
+              {isRouting ? <time dateTime="2026-10-16">{locale === "fr" ? "16 octobre 2026" : "October 16, 2026"}</time> : <>
               <time dateTime="2026-10-03">
                 {locale === "fr" ? "3 octobre 2026" : "October 3, 2026"}
               </time>
@@ -76,7 +79,12 @@ export function ThoughtsPage({
               <time dateTime="2026-10-05">
                 {locale === "fr" ? "Mis à jour le 5 octobre 2026" : "Updated October 5, 2026"}
               </time>
+              </>}
             </p>
+            {isRouting ? <div className="thought-prose">
+              {reflection.paragraphs.map((p, i) => <p key={p}>{i === reflection.paragraphs.length - 1 ? <strong>{p}</strong> : p}</p>)}
+              <p className="thought-source">{locale === "fr" ? "Pour aller plus loin : " : "Further reading: "}<a href="https://openrouter.ai/docs/guides/routing/routers/auto-router" target="_blank" rel="noopener noreferrer">OpenRouter</a> · <a href="https://arxiv.org/abs/2406.18665" target="_blank" rel="noopener noreferrer">RouteLLM</a></p>
+            </div> : <>
             <div className="thought-prose">
               {post.paragraphs.map((p) => (
                 <p key={p}>{p}</p>
@@ -115,6 +123,7 @@ export function ThoughtsPage({
                 latent-spaces / brag <ArrowUpRight size={16} />
               </span>
             </a>
+            </>}
             <p className="thought-disclosure">{copy.disclosure}</p>
             <aside className="thought-contact">
               <p>{post.next}</p>
@@ -131,7 +140,7 @@ export function ThoughtsPage({
           <>
             <p className="eyebrow">
               {locale === "fr" ? "LE CARNET DE NATHAN" : "NATHAN’S NOTEBOOK"} /
-              01
+              02
             </p>
             <h1>
               {copy.title}
@@ -143,6 +152,18 @@ export function ThoughtsPage({
               className="thought-list"
               aria-label={locale === "fr" ? "Les notes" : "Notes"}
             >
+              <article>
+                <div className="thought-meta">
+                  <span>{reflection.category}</span>
+                  <span>{reflection.status}</span>
+                  <time dateTime="2026-10-16">16.10.2026</time>
+                </div>
+                <Link className="thought-entry" href={thoughtPath(locale, "routing")}>
+                  <h2>{reflection.title}</h2>
+                  <p>{reflection.excerpt}</p>
+                  <span>{copy.read} <ArrowUpRight size={17} /></span>
+                </Link>
+              </article>
               <article>
                 <div className="thought-meta">
                   <span>{copy.category}</span>
