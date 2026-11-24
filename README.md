@@ -59,6 +59,13 @@ NEXT_PUBLIC_API_URL=http://localhost:8000 npm run dev
 
 Ouvre **http://localhost:3000** (ou 3001 si le port 3000 est déjà pris).
 
+## Sécurité du chat
+
+- **PII** : emails, téléphones, IBAN, cartes bancaires (Luhn) et n° de sécu sont masqués dans la question *avant* l'appel au modèle et avant le cache Redis, puis à nouveau dans la réponse (`backend/app/guardrails.py`).
+- **Prompt injection** : détection par motifs (FR/EN) → réponse fixe sans appel modèle ; le texte du visiteur est encapsulé dans `<donnees_visiteur>` (balises neutralisées) ; la consigne « comparer une offre » est construite côté serveur ; règles de sécurité ajoutées en fin de prompt système.
+- **Contrôle des réponses** : blocage si fuite du prompt système ou sujet sensible sur Nathan (salaire, santé, adresse…).
+- **Quota** (`backend/app/rate_limit.py`) : `CHAT_LIMIT_PER_VISITOR` questions par IP hachée sur `CHAT_LIMIT_WINDOW_SECONDS`, plus un plafond global `CHAT_GLOBAL_DAILY_LIMIT`. Au-delà : HTTP 429 et pop-up de contact côté front (LinkedIn, plus `NEXT_PUBLIC_BOOKING_URL` / `NEXT_PUBLIC_CONTACT_EMAIL` si définis).
+
 ## Tests
 
 ```bash

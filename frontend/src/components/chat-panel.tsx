@@ -13,9 +13,14 @@ import {
 import { useAgentStatus } from "@/lib/agent-status-context";
 import {
   askQuestionStream,
+  getQuota,
   isAgentAvailable,
+  QuotaExceededError,
+  type ChatInput,
   type ChatResponse,
+  type Quota,
 } from "@/lib/api";
+import { ContactModal } from "@/components/contact-modal";
 
 import { profile } from "@/lib/profile";
 
@@ -24,7 +29,9 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   stats?: ChatResponse;
-  retry?: string;
+  retry?: { input: ChatInput; display: string };
+  notice?: string;
+  limit?: boolean;
 }
 const suggestions = [
   "Présente-moi Nathan en 30 secondes",
@@ -38,14 +45,21 @@ export function ChatPanel() {
     "checking" | "online" | "offline"
   >("checking");
   const unavailable = connection !== "online";
+  const [quota, setQuota] = useState<Quota | null>(null);
+  const [contactOpen, setContactOpen] = useState(false);
+  const limitReached = quota !== null && quota.remaining <= 0;
   useEffect(() => {
     const controller = new AbortController();
     void isAgentAvailable(controller.signal).then((available) => {
       if (!controller.signal.aborted)
         setConnection(available ? "online" : "offline");
     });
+    void getQuota(controller.signal).then((value) => {
+      if (!controller.signal.aborted && value) setQuota(value);
+    });
     return () => controller.abort();
   }, []);
+
 
   async function reconnect() {
     setConnection("checking");
@@ -68,8 +82,14 @@ export function ChatPanel() {
     if (node) node.scrollTop = node.scrollHeight;
   }, [messages, loading, mode]);
 
-  async function send(question: string, display = question) {
-    if (!question.trim() || pending.current || unavailable) return;
+  async function send(input: ChatInput, display = input.question ?? "") {
+    const question = input.question ?? "";
+    if (!question.trim() && !input.job_description?.trim()) return;
+    if (pending.current || unavailable) return;
+    if (limitReached) {
+      setContactOpen(true);
+      return;
+    }
     pending.current = true;
     setMessages((previous) => [
       ...previous,
@@ -77,11 +97,18 @@ export function ChatPanel() {
     ]);
     setInput("");
     setLoading(true);
-    startRun(question);
+    startRun(display);
     let completed = false;
+    let notice: string | undefined;
     try {
-      await askQuestionStream(question, (event) => {
-        if (event.stage === "classify") {
+      await askQuestionStream(input, (event) => {
+        if (event.stage === "quota") {
+          setQuota(event);
+        } else if (event.stage === "guard") {
+          if (event.reason === "pii")
+            notice =
+              "Par sécurité, les données personnelles de votre message (email, téléphone…) ont été masquées avant l’envoi.";
+        } else if (event.stage === "classify") {
           updateRun((previous) => ({
             ...previous,
             stage: "classify",
@@ -136,13 +163,33 @@ export function ChatPanel() {
               id: nextId.current++,
               role: "assistant",
               content: event.response.answer,
-              stats: event.response,
+              stats:
+                event.response.model_name === "garde-fou"
+                  ? undefined
+                  : event.response,
+              notice,
             },
           ]);
         }
       });
       if (!completed) throw new Error("La réponse a été interrompue.");
-    } catch {
+    } catch (error) {
+      if (error instanceof QuotaExceededError) {
+        setQuota(error.quota);
+        failRun("Limite de questions atteinte.");
+        setMessages((previous) => [
+          ...previous,
+          {
+            id: nextId.current++,
+            role: "assistant",
+            content:
+              "Vous avez atteint la limite de questions pour aujourd’hui. La suite se passe directement avec Nathan.",
+            limit: true,
+          },
+        ]);
+        setContactOpen(true);
+        return;
+      }
       setConnection("offline");
       failRun("Le service n’a pas pu terminer cette réponse.");
       setMessages((previous) => [
@@ -152,7 +199,7 @@ export function ChatPanel() {
           role: "assistant",
           content:
             "La connexion avec Mongoose est indisponible pour le moment. Vous pouvez contacter Nathan pour lui demander de reconnecter son agent.",
-          retry: question,
+          retry: { input, display },
         },
       ]);
     } finally {
@@ -166,7 +213,7 @@ export function ChatPanel() {
     const description = job.trim();
     setMode("chat");
     void send(
-      `Analyse l’adéquation de Nathan avec cette fiche de poste. Réponds en français sous ce format : VERDICT (adapté, partiellement adapté ou peu adapté), CE QUI CORRESPOND (2 à 4 éléments concrets), POINTS À CLARIFIER (écarts ou informations manquantes), INTÉRÊT PROBABLE (uniquement si étayé par le parcours). N’invente aucune expérience, compétence ou motivation. Appuie-toi uniquement sur les informations disponibles sur Nathan.\n\nFICHE DE POSTE :\n${description}`,
+      { job_description: description },
       `Est-ce que mon offre correspond à son profil ?\n\n${description}`,
     );
   }
@@ -190,7 +237,11 @@ export function ChatPanel() {
               ? "Connexion…"
               : connection === "offline"
                 ? "Hors ligne"
-                : "À vous de jouer"}
+                : limitReached
+                  ? "Limite atteinte"
+                  : quota && quota.remaining <= 3
+                    ? `${quota.remaining} question${quota.remaining > 1 ? "s" : ""} restante${quota.remaining > 1 ? "s" : ""}`
+                    : "À vous de jouer"}
         </span>
       </div>
       {unavailable && (
@@ -263,7 +314,7 @@ export function ChatPanel() {
                   <button
                     disabled={loading || unavailable}
                     key={suggestion}
-                    onClick={() => send(suggestion)}
+                    onClick={() => send({ question: suggestion })}
                   >
                     {suggestion}
                     <ArrowUpRight size={16} />
@@ -280,11 +331,25 @@ export function ChatPanel() {
                   {message.role === "user" ? "VOUS" : "MONGOOSE"}
                 </span>
                 <p>{message.content}</p>
+                {message.notice && (
+                  <p className="message-notice">{message.notice}</p>
+                )}
+                {message.limit && (
+                  <button
+                    type="button"
+                    className="retry-button"
+                    onClick={() => setContactOpen(true)}
+                  >
+                    Parler avec Nathan <ArrowUpRight size={14} />
+                  </button>
+                )}
                 {message.retry && (
                   <button
                     className="retry-button"
                     disabled={loading || unavailable}
-                    onClick={() => send(message.retry!)}
+                    onClick={() =>
+                      send(message.retry!.input, message.retry!.display)
+                    }
                   >
                     <RefreshCw size={14} />
                     Réessayer
@@ -347,7 +412,7 @@ export function ChatPanel() {
             className="chat-composer"
             onSubmit={(event) => {
               event.preventDefault();
-              void send(input);
+              void send({ question: input });
             }}
           >
             <label className="sr-only" htmlFor="question">
@@ -355,19 +420,21 @@ export function ChatPanel() {
             </label>
             <input
               id="question"
-              maxLength={12000}
+              maxLength={2000}
               placeholder={
                 unavailable
                   ? "Mongoose est momentanément hors ligne"
-                  : "Et vous, qu’aimeriez-vous savoir ?"
+                  : limitReached
+                    ? "Limite atteinte : continuons en direct"
+                    : "Et vous, qu’aimeriez-vous savoir ?"
               }
               value={input}
-              disabled={loading || unavailable}
+              disabled={loading || unavailable || limitReached}
               onChange={(event) => setInput(event.target.value)}
             />
             <button
               type="submit"
-              disabled={loading || unavailable || !input.trim()}
+              disabled={loading || unavailable || limitReached || !input.trim()}
               aria-label="Envoyer la question"
             >
               <Send size={18} />
@@ -393,7 +460,7 @@ export function ChatPanel() {
           />
           <button
             className="button button-orange"
-            disabled={loading || unavailable || !job.trim()}
+            disabled={loading || unavailable || limitReached || !job.trim()}
             onClick={analyzeJob}
           >
             Comparer avec mon parcours <ArrowRight size={16} />
@@ -403,6 +470,15 @@ export function ChatPanel() {
       <p className="chat-disclaimer">
         Une IA peut se tromper. Les sources sont là pour vérifier.
       </p>
+      <ContactModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        questions={messages
+          .filter((message) => message.role === "user")
+          .map((message) => message.content.split("\n")[0])}
+        resetInSeconds={quota?.reset_in_seconds ?? 0}
+        reason={quota?.reason ?? "visitor"}
+      />
     </div>
   );
 }

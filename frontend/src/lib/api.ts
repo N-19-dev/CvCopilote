@@ -38,13 +38,55 @@ export interface ChatResponse {
   sources: Source[];
 }
 
-export async function askQuestion(question: string): Promise<ChatResponse> {
+export interface Quota {
+  limit: number;
+  remaining: number;
+  reset_in_seconds: number;
+  reason: "visitor" | "global" | null;
+}
+
+/** Levée quand le visiteur a épuisé ses questions (HTTP 429). */
+export class QuotaExceededError extends Error {
+  constructor(public quota: Quota) {
+    super("quota_exceeded");
+  }
+}
+
+export async function getQuota(signal?: AbortSignal): Promise<Quota | null> {
+  if (!API_URL) return null;
+  try {
+    const response = await fetch(`${API_URL}/chat/quota`, {
+      cache: "no-store",
+      signal,
+    });
+    return response.ok ? ((await response.json()) as Quota) : null;
+  } catch {
+    return null;
+  }
+}
+
+export interface ChatInput {
+  question?: string;
+  job_description?: string;
+}
+
+async function throwIfQuota(response: Response) {
+  if (response.status === 429) {
+    const body = await response.json().catch(() => null);
+    throw new QuotaExceededError(
+      body?.quota ?? { limit: 0, remaining: 0, reset_in_seconds: 0, reason: "visitor" },
+    );
+  }
+}
+
+export async function askQuestion(input: ChatInput): Promise<ChatResponse> {
   const response = await fetch(`${API_URL}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify(input),
   });
 
+  await throwIfQuota(response);
   if (!response.ok) {
     throw new Error(`Le backend a répondu ${response.status}`);
   }
@@ -53,6 +95,12 @@ export async function askQuestion(question: string): Promise<ChatResponse> {
 }
 
 export type ChatStreamEvent =
+  | ({ stage: "quota" } & Quota)
+  | {
+      stage: "guard";
+      reason: "injection" | "pii" | "prompt_leak" | "sensitive_topic";
+      types?: string[];
+    }
   | { stage: "cache_hit" }
   | { stage: "classify"; tier: Tier }
   | { stage: "retrieve"; sources: Source[] }
@@ -63,16 +111,17 @@ export type ChatStreamEvent =
 // que le frontend puisse animer chaque étape réelle du pipeline au fur et à
 // mesure — pas une choré simulée qui se contenterait d'attendre le fetch.
 export async function askQuestionStream(
-  question: string,
+  input: ChatInput,
   onEvent: (event: ChatStreamEvent) => void,
 ): Promise<void> {
   const response = await fetch(`${API_URL}/chat/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify(input),
     signal: AbortSignal.timeout(60_000),
   });
 
+  await throwIfQuota(response);
   if (!response.ok || !response.body) {
     throw new Error(`Le backend a répondu ${response.status}`);
   }

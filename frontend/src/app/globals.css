@@ -4132,3 +4132,128 @@ html[data-film-tone="light"] .site-header {
     gap: 8px;
   }
 }
+
+/* Garde-fous du chat : notice PII + pop-up de contact quand le quota est atteint. */
+.message-notice {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--orange);
+  background: #f4eedf;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.contact-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in oklab, var(--foreground) 32%, transparent);
+  backdrop-filter: blur(6px);
+}
+.contact-modal {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 32px 28px 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 30px 80px -30px color-mix(in oklab, var(--foreground) 45%, transparent);
+}
+.contact-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0 28px auto;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--orange);
+}
+.contact-modal h3 {
+  margin: 10px 0 0;
+  font-size: clamp(22px, 4vw, 27px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.contact-modal p {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.contact-reset {
+  color: var(--foreground);
+}
+.contact-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--muted);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.contact-close:hover {
+  background: #f4eedf;
+  color: var(--foreground);
+  transform: rotate(90deg);
+}
+.contact-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+}
+.contact-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.contact-action svg {
+  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.contact-action:hover {
+  border-color: var(--foreground);
+  transform: translateY(-1px);
+}
+.contact-action:hover svg {
+  transform: translate(2px, -2px);
+}
+.contact-action-primary {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #fffef9;
+}
+.contact-action-primary:hover {
+  border-color: var(--orange);
+  background: color-mix(in oklab, var(--orange) 88%, black);
+}
+.contact-action:focus-visible,
+.contact-close:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-action,
+  .contact-action svg,
+  .contact-close {
+    transition: none;
+  }
+}
+@media (max-width: 640px) {
+  .contact-modal {
+    padding: 28px 20px 20px;
+  }
+}
