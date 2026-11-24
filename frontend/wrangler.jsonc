@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nathan-sornet",
+  "compatibility_date": "2026-11-24",
+  "routes": [
+    { "pattern": "nathansornet.com", "custom_domain": true },
+    { "pattern": "www.nathansornet.com", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
